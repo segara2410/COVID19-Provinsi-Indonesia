@@ -3,22 +3,7 @@
   <head>
     <title>Peta Persebaran COVID-19</title>
     <link rel="icon" href="assets/img/icon.png">
-    <style>
-      .map-wrapper 
-      {
-        position: relative;
-        height: 80vh;
-      }
-
-      #map 
-      {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
-    </style>
+    <link rel="stylesheet" href="assets/css/style.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   </head>
@@ -51,41 +36,38 @@
 
     L.control.scale().addTo(map);
     
+    var geojsonLayer
+
     var provinsi = new Object();
-    $.ajaxSetup({async: false});
-    $.getJSON('https://api.kawalcorona.com/indonesia/provinsi/', function(data) 
-    { 
-      for (datum in data)
-      {
-        var new_object = data[datum].attributes;
-        var provinsi_name = new_object["Provinsi"].toUpperCase();
-        provinsi[provinsi_name] = Object.assign({},
-        {
-          positif : new_object["Kasus_Posi"],
-          sembuh : new_object["Kasus_Semb"],
-          meninggal : new_object["Kasus_Meni"],
-        })
-      }
-    });
+    
+    var info = L.control();
 
-    function popUp(f,l)
+    info.onAdd = function (map) 
     {
-      var out = [];
-      if (f.properties)
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (props) 
+    {
+      this._div.innerHTML = '<h4>Persebaran COVID-19</h4>Arahkan ke Suatu Provinsi';
+
+      if (props)
       {
-        out.push("Provinsi: " + f.properties['Propinsi']);
-        var current_provinsi = provinsi[`${f.properties['Propinsi']}`];
-
-        if (current_provinsi)
-        {
-          out.push("Positif: " + current_provinsi.positif);
-          out.push("Sembuh: " + current_provinsi.sembuh);
-          out.push("Meninggal: " + current_provinsi.meninggal);
-        }
-
-        l.bindPopup(out.join("<br />"));
+        console.log(props.Propinsi);
+        var current_provinsi = provinsi[`${props.Propinsi}`];
+        
+        this._div.innerHTML = '<h4>Persebaran COVID-19</h4>' + (props ? '<b>' + props.Propinsi + '</b><br />' : 'Arahkan ke Suatu Provinsi') + 
+          (current_provinsi ?
+          'Jumlah Positif : ' + current_provinsi.positif + ' orang<br />' +
+          'Jumlah Sembuh : ' + current_provinsi.sembuh + ' orang<br />' +
+          'Jumlah Meninggal : ' + current_provinsi.meninggal + ' orang'
+          : '');
       }
-    }
+    };
+
+    info.addTo(map);
 
     function categorycolor(f)
     {
@@ -137,7 +119,83 @@
       };
     }
 
-    var geojsonLayer = new L.GeoJSON.AJAX(["assets/json/indonesia-province.json"], {onEachFeature:popUp, style:stylecolor});       
-    geojsonLayer.addTo(map);
+    function highlightFeature(e) 
+    {
+      var layer = e.target;
+
+      layer.setStyle(
+        {
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+      });
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) 
+      {
+        layer.bringToFront();
+      }
+      info.update(layer.feature.properties);
+    }
+
+    function resetHighlight(e) 
+    {
+      geojsonLayer.resetStyle(e.target);
+      info.update();
+    }
+
+    function zoomToFeature(e) 
+    {
+      map.fitBounds(e.target.getBounds());
+    }
+
+    function onEachFeature(feature, layer) 
+    {
+      layer.on(
+      {
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+      });
+    }
+
+    $.getJSON('https://api.kawalcorona.com/indonesia/provinsi/', function(data) 
+    { 
+      for (datum in data)
+      {
+        var new_object = data[datum].attributes;
+        var provinsi_name = new_object["Provinsi"].toUpperCase();
+        provinsi[provinsi_name] = Object.assign({},
+        {
+          positif : new_object["Kasus_Posi"],
+          sembuh : new_object["Kasus_Semb"],
+          meninggal : new_object["Kasus_Meni"],
+        })
+      }
+      geojsonLayer = new L.GeoJSON.AJAX(["assets/json/indonesia-province.json"], {onEachFeature:onEachFeature, style:stylecolor});       
+      geojsonLayer.addTo(map);
+    });
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) 
+    {
+        var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0, 1000, 10000],
+        labels = [];
+        
+        var color = ['#00cc00', '#FFFF33', '#FFA500', '#DC143C'];
+
+        div.innerHTML += '<i style="background:' + color[0] + '"></i> ' + grades[0] + '<br>';
+
+        for (var i = 0; i < grades.length; i++) {
+          div.innerHTML +=
+            '<i style="background:' + color[i+1] + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+        return div;
+    };
+
+    legend.addTo(map);
   </script>
 </html>
