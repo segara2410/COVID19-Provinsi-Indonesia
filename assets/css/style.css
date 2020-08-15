@@ -16,7 +16,7 @@
 .info 
 {
   padding: 6px 8px;
-  font: 14px/16px Arial, Helvetica, sans-serif;
+  font: 1.2vw/1.5vw Arial, Helvetica, sans-serif;
   background: white;
   background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -25,12 +25,14 @@
 
 .info h4 
 {
+  font-size: 2vw;
   margin: 0 0 5px;
   color: #777;
 }
 
 .legend 
 {
+  font-size: 1vw;
   line-height: 18px;
   color: #555;
 }
