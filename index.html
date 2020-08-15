@@ -23,7 +23,7 @@
   <body>
     <div class="card">
       <div class="card-header text-center">
-        <h1>Peta Penyebaran COVID-19 Indonesia</h1>
+        <h1>Peta Persebaran COVID-19 Indonesia</h1>
       </div>
       <div class="card-body">
         <div class="map-wrapper">
@@ -34,19 +34,19 @@
   </body>
   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+  
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+  
   <script type="text/javascript">
     var map = L.map('map').setView({lon: 117.9213, lat: -1.7893}, 5);
 
-    // add the OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
     }).addTo(map);
 
-    // show the scale bar on the lower left corner
     L.control.scale().addTo(map);
     
     var provinsi = new Object();
@@ -64,7 +64,6 @@
           meninggal : new_object["Kasus_Meni"],
         })
       }
-      // provinsi = data;
     });
 
     function popUp(f,l)
@@ -86,7 +85,8 @@
       }
     }
 
-    function categorycolor(f){
+    function categorycolor(f)
+    {
       var current_provinsi = provinsi[`${f.properties['Propinsi']}`];
       
       var positif = 0;
@@ -116,7 +116,8 @@
           return color;
         }
       }
-      else { //abu-abu
+      else 
+      {
         color = '#A9A9A9';
         return color;
       }
@@ -124,14 +125,14 @@
 
     function stylecolor(feature) 
     {
-        return {
-            fillColor: categorycolor(feature),
-            weight: 2,
-            opacity: 1,
-            color: 'white',
-            dashArray: '3',
-            fillOpacity: 0.7
-        };
+      return {
+        fillColor: categorycolor(feature),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+      };
     }
 
     var geojsonLayer = new L.GeoJSON.AJAX(["assets/json/indonesia-province.json"], {onEachFeature:popUp, style:stylecolor});       
