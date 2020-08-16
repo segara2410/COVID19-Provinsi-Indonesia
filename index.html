@@ -165,6 +165,7 @@
       {
         var new_object = data[datum].attributes;
         var provinsi_name = new_object["Provinsi"].toUpperCase();
+        console.log(provinsi_name);
         provinsi[provinsi_name] = Object.assign({},
         {
           positif : new_object["Kasus_Posi"],
