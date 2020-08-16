@@ -159,18 +159,17 @@
       });
     }
 
-    $.getJSON('https://api.kawalcorona.com/indonesia/provinsi/', function(data) 
-    { 
-      for (datum in data)
+    $.getJSON('https://indonesia-covid-19.mathdro.id/api/provinsi', function(data) 
+    {
+      for (datum in data.data)
       {
-        var new_object = data[datum].attributes;
-        var provinsi_name = new_object["Provinsi"].toUpperCase();
-        console.log(provinsi_name);
+        var new_object = data.data[datum];
+        var provinsi_name = new_object.provinsi.toUpperCase();
         provinsi[provinsi_name] = Object.assign({},
         {
-          positif : new_object["Kasus_Posi"],
-          sembuh : new_object["Kasus_Semb"],
-          meninggal : new_object["Kasus_Meni"],
+          positif : new_object["kasusPosi"],
+          sembuh : new_object["kasusSemb"],
+          meninggal : new_object["kasusMeni"],
         })
       }
       geojsonLayer = new L.GeoJSON.AJAX(["assets/json/indonesia-province.json"], {onEachFeature:onEachFeature, style:stylecolor});       
