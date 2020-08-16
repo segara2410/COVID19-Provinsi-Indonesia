@@ -187,12 +187,12 @@
         
         var color = ['#00cc00', '#FFFF33', '#FFA500', '#DC143C'];
 
-        div.innerHTML += '<i style="background:' + color[0] + '"></i> ' + grades[0] + '<br>';
+        div.innerHTML += '<div class="text-left"><i style="background:' + color[0] + '"></i> ' + grades[0] + '</div>';
 
         for (var i = 0; i < grades.length; i++) {
           div.innerHTML +=
-            '<i style="background:' + color[i+1] + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            '<div class="text-left"><i style="background:' + color[i+1] + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '</div>' : '+');
         }
         return div;
     };
