@@ -147,6 +147,7 @@
     function zoomToFeature(e) 
     {
       map.fitBounds(e.target.getBounds());
+      highlightFeature(e);
     }
 
     function onEachFeature(feature, layer) 
@@ -155,7 +156,7 @@
       {
         mouseover: highlightFeature,
         mouseout: resetHighlight,
-        click: zoomToFeature
+        click: zoomToFeature,
       });
     }
 
